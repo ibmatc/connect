@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# (C) Copyright IBM Corp. 2020
+# SPDX-License-Identifier: Apache-2.0
+#
 # lfh-quickstart.sh
 # Provisions the LFH quick start stack into an existing OpenShift 4.x cluster.
 #
@@ -46,6 +50,8 @@ function install() {
     --name="lfh-nats-server" \
     --generator='route/v1'
 
+  oc apply -f nats-server-ingress.yml --wait=true
+
   # Zookeeper - Kafka Metadata
   oc new-app "${LFH_ZOOKEEPER_IMAGE}" \
       --name="${LFH_ZOOKEEPER_SERVICE_NAME}" \
@@ -92,7 +98,6 @@ function install() {
     --env LFH_CONNECT_MESSAGING_URI="nats:lfh-events?servers=nats-server:4222" \
     --env LFH_CONNECT_MESSAGING_SUBSCRIBE_HOSTS="nats-server:4222" \
     --env LFH_CONNECT_ORTHANC_SERVER_URI="http://orthanc:{{lfh.connect.orthanc_server.port}}/instances" \
-    --env LFH_CONNECT_MESSAGING_SUBSCRIBE_HOSTS="nats-server:4222" \
     --env LFH_CONNECT_DATASTORE_BROKERS="kafka:9092" \
     --show-all=true
 
